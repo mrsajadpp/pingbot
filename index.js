@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const express = require('express');
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -23,7 +23,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 const badWords = ['badword1', 'badword2']; // Add bad words to this list
 
-client.commands = new Map();
+client.commands = new Collection();
 const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
@@ -31,9 +31,18 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log('Discord bot is ready!');
     client.user.setActivity('Discord', { type: 'WATCHING' });
+
+    const commands = client.commands.map(command => command.data);
+    const guilds = await client.guilds.fetch();
+
+    guilds.forEach(async guild => {
+        const fetchedGuild = await client.guilds.fetch(guild.id);
+        await fetchedGuild.commands.set(commands);
+        console.log(`Registered commands for guild: ${fetchedGuild.name}`);
+    });
 });
 
 client.on('guildCreate', guild => {
