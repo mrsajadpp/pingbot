@@ -21,7 +21,7 @@ app.listen(port, () => {
 // Discord bot setup
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-const badWords = ['badword1', 'badword2']; // Add bad words to this list
+const badWords = ['fuck', 'ass hole']; // Add bad words to this list
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
